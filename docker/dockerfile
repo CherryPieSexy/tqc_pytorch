@@ -20,17 +20,10 @@ RUN apt-get -y update && apt-get -y install \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install anaconda
+COPY ./requirements.txt /root/requirements.txt
 RUN . ~/.bashrc && \
-    wget https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh -O ~/Anaconda3.sh && \
-    bash ~/Anaconda3.sh -b && \
-    echo 'export PATH="/root/anaconda3/bin:$PATH"' >> ~/.bashrc && \
-    rm ~/Anaconda3.sh
-
-COPY ./environment.yml /root/environment.yml
-RUN . ~/.bashrc && \
-    conda update --all && \
-    conda env create -f /root/environment.yml
+    pip install --upgrade pip && \
+    pip install -U -r /root/requirements.txt
 
 # Set normal TZ
 RUN ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime
