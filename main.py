@@ -12,6 +12,7 @@ from tqc.trainer import Trainer
 from tqc.structures import Actor, Critic, RescaleAction
 from tqc.functions import eval_policy
 
+from backflip_cheetah_env import BackflipCheetahEnv
 
 EPISODE_LENGTH = 1000
 
@@ -19,9 +20,13 @@ EPISODE_LENGTH = 1000
 def main(args, results_dir, models_dir, prefix):
     # --- Init ---
 
-    # remove TimeLimit
-    env = gym.make(args.env).unwrapped
-    eval_env = gym.make(args.env).unwrapped
+    if args.env == 'backflip_cheetah':
+        env = BackflipCheetahEnv()
+        eval_env = BackflipCheetahEnv()
+    else:
+        # remove TimeLimit
+        env = gym.make(args.env).unwrapped
+        eval_env = gym.make(args.env).unwrapped
 
     env = RescaleAction(env, -1., 1.)
     eval_env = RescaleAction(eval_env, -1., 1.)
