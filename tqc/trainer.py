@@ -58,16 +58,10 @@ class Trainer(object):
 		# --- Policy and alpha loss ---
 		new_action, log_pi = self.actor(state)
 		alpha_loss = -self.log_alpha * (log_pi + self.target_entropy).detach().mean()
-		actor_loss = (alpha * log_pi - self.critic(state, new_action).mean(2).mean(1, keepdim=True)).mean()
+		# actor_loss = (alpha * log_pi - self.critic(state, new_action).mean(2).mean(1, keepdim=True)).mean()
+		actor_loss = (alpha * log_pi).mean()
 
 		# --- Update ---
-		self.critic_optimizer.zero_grad()
-		critic_loss.backward()
-		self.critic_optimizer.step()
-
-		for param, target_param in zip(self.critic.parameters(), self.critic_target.parameters()):
-			target_param.data.copy_(self.tau * param.data + (1 - self.tau) * target_param.data)
-
 		self.actor_optimizer.zero_grad()
 		actor_loss.backward()
 		self.actor_optimizer.step()
@@ -75,6 +69,13 @@ class Trainer(object):
 		self.alpha_optimizer.zero_grad()
 		alpha_loss.backward()
 		self.alpha_optimizer.step()
+
+		self.critic_optimizer.zero_grad()
+		critic_loss.backward()
+		self.critic_optimizer.step()
+
+		for param, target_param in zip(self.critic.parameters(), self.critic_target.parameters()):
+			target_param.data.copy_(self.tau * param.data + (1 - self.tau) * target_param.data)
 
 		self.total_it += 1
 

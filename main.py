@@ -20,7 +20,7 @@ EPISODE_LENGTH = 1000
 def main(args, results_dir, models_dir, prefix):
     # --- Init ---
 
-    if args.env == 'backflip_cheetah':
+    if args.env == 'BackflipCheetah':
         env = BackflipCheetahEnv()
         eval_env = BackflipCheetahEnv()
     else:
