@@ -1,0 +1,35 @@
+FROM pytorch/pytorch:1.11.0-cuda11.3-cudnn8-devel
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get -y update && apt-get -y install \
+    keyboard-configuration \
+    nano vim htop git wget \
+    libglu1 libsm6 libxi6 \
+    build-essential curl \
+    software-properties-common \
+    net-tools \
+    virtualenv \
+    cmake \
+    xpra \
+    xserver-xorg-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# download mujoco and place it in the correct location
+RUN wget https://mujoco.org/download/mujoco210-linux-x86_64.tar.gz
+RUN tar -C "~/.mujoco" -xvf mujoco210-linux-x86_64.tar.gz
+RUN rm mujoco210-linux-x86_64.tar.gz
+
+# Install anaconda
+RUN . ~/.bashrc && \
+    wget https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh -O ~/Anaconda3.sh && \
+    bash ~/Anaconda3.sh -b && \
+    echo 'export PATH="/root/anaconda3/bin:$PATH"' >> ~/.bashrc && \
+    rm ~/Anaconda3.sh
+RUN . ~/.bashrc && \
+    conda update --all && \
+    conda env create -f ../environment.yml
+
+# Set normal TZ
+RUN ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime
